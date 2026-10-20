@@ -17,6 +17,36 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+body[data-theme="paper"] {
+  color-scheme: light;
+  --night: #f4efe6;
+  --panel: rgb(255 252 246 / 82%);
+  --panel-solid: #fffaf1;
+  --line: rgb(77 57 38 / 16%);
+  --line-bright: rgb(77 57 38 / 24%);
+  --white: #29231e;
+  --muted: #6f6258;
+  --blue: #3685a7;
+  --violet: #7756a8;
+  --pink: #c35f87;
+  --cyan: #398b83;
+}
+
+body[data-theme="meadow"] {
+  color-scheme: light;
+  --night: #eaf1e8;
+  --panel: rgb(248 252 245 / 80%);
+  --panel-solid: #f5faf1;
+  --line: rgb(37 69 52 / 16%);
+  --line-bright: rgb(37 69 52 / 25%);
+  --white: #20352b;
+  --muted: #5d7466;
+  --blue: #398d85;
+  --violet: #5b8f63;
+  --pink: #bd7c55;
+  --cyan: #3b9280;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -51,6 +81,14 @@ body::before {
     radial-gradient(ellipse at 54% 85%, rgb(16 97 111 / 8%), transparent 40%);
   content: "";
   pointer-events: none;
+}
+
+body[data-theme="paper"]::before {
+  background: radial-gradient(ellipse at 78% 12%, rgb(211 153 109 / 16%), transparent 38%), radial-gradient(ellipse at 20% 70%, rgb(110 168 178 / 12%), transparent 42%);
+}
+
+body[data-theme="meadow"]::before {
+  background: radial-gradient(ellipse at 78% 12%, rgb(111 162 105 / 16%), transparent 38%), radial-gradient(ellipse at 18% 70%, rgb(77 163 151 / 12%), transparent 42%);
 }
 
 button,
@@ -212,6 +250,36 @@ img {
 .site-nav a:hover::after,
 .site-nav a[aria-current="page"]::after {
   transform: scaleX(1);
+}
+
+.theme-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: clamp(0.2rem, 1vw, 0.8rem);
+  color: var(--muted);
+  font-family: "DM Mono", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.theme-picker select {
+  min-height: 2.25rem;
+  padding: 0.35rem 1.8rem 0.35rem 0.65rem;
+  border: 1px solid var(--line-bright);
+  border-radius: 0.55rem;
+  background: var(--panel-solid);
+  color: var(--white);
+  font-family: "Inter", sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.theme-picker select option {
+  background: var(--panel-solid);
+  color: var(--white);
 }
 
 .menu-toggle {
@@ -537,6 +605,62 @@ p {
   background: var(--violet);
   content: "";
   animation: cue-travel 1.7s ease-in-out infinite;
+}
+
+body[data-theme="paper"] .eyebrow,
+body[data-theme="paper"] .typed-word,
+body[data-theme="paper"] .text-link,
+body[data-theme="paper"] .card-link,
+body[data-theme="paper"] .about-copy p a {
+  color: #674b91;
+}
+
+body[data-theme="meadow"] .eyebrow,
+body[data-theme="meadow"] .typed-word,
+body[data-theme="meadow"] .text-link,
+body[data-theme="meadow"] .card-link,
+body[data-theme="meadow"] .about-copy p a {
+  color: #356c51;
+}
+
+body[data-theme="paper"] .hero-name,
+body[data-theme="paper"] .hero-note,
+body[data-theme="paper"] .scroll-cue,
+body[data-theme="paper"] .card-topline,
+body[data-theme="paper"] .post-card-meta,
+body[data-theme="paper"] .contact-index,
+body[data-theme="paper"] .model-caption,
+body[data-theme="paper"] .footer-copyright,
+body[data-theme="meadow"] .hero-name,
+body[data-theme="meadow"] .hero-note,
+body[data-theme="meadow"] .scroll-cue,
+body[data-theme="meadow"] .card-topline,
+body[data-theme="meadow"] .post-card-meta,
+body[data-theme="meadow"] .contact-index,
+body[data-theme="meadow"] .model-caption,
+body[data-theme="meadow"] .footer-copyright {
+  color: var(--muted);
+}
+
+body[data-theme="paper"] .post-category,
+body[data-theme="paper"] .entry-note,
+body[data-theme="paper"] .quote-panel cite,
+body[data-theme="paper"] .contact-detail,
+body[data-theme="meadow"] .post-category,
+body[data-theme="meadow"] .entry-note,
+body[data-theme="meadow"] .quote-panel cite,
+body[data-theme="meadow"] .contact-detail {
+  color: var(--muted);
+}
+
+body[data-theme="paper"] .site-header.is-scrolled,
+body[data-theme="meadow"] .site-header.is-scrolled {
+  background: color-mix(in srgb, var(--night) 88%, transparent);
+}
+
+body[data-theme="paper"] .site-nav,
+body[data-theme="meadow"] .site-nav {
+  background: var(--panel-solid);
 }
 
 .hero-orbit {

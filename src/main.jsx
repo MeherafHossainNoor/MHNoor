@@ -156,7 +156,7 @@ function useScrolledHeader() {
   return scrolled;
 }
 
-function Header({ page }) {
+function Header({ page, theme, onThemeChange }) {
   const scrolled = useScrolledHeader();
   const [menuOpen, setMenuOpen] = useState(false);
   const links = [
@@ -191,6 +191,16 @@ function Header({ page }) {
             {label}
           </a>
         ))}
+        {page === "home" && (
+          <label className="theme-picker">
+            <span>Theme</span>
+            <select value={theme} onChange={(event) => onThemeChange(event.target.value)} aria-label="Homepage theme">
+              <option value="aurora">Aurora</option>
+              <option value="paper">Paper</option>
+              <option value="meadow">Meadow</option>
+            </select>
+          </label>
+        )}
       </nav>
     </header>
   );
@@ -537,6 +547,25 @@ function App() {
 
   useMotionAndReveal();
 
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem("homepage-theme") || "aurora";
+    } catch {
+      return "aurora";
+    }
+  });
+
+  useEffect(() => {
+    if (page !== "home") return;
+    document.body.dataset.theme = theme;
+    try {
+      localStorage.setItem("homepage-theme", theme);
+    } catch {
+      // The selected theme still applies for this visit when storage is unavailable.
+    }
+    return () => delete document.body.dataset.theme;
+  }, [page, theme]);
+
   useEffect(() => {
     if (window.matchMedia("(pointer: fine) and (prefers-reduced-motion: no-preference)").matches) {
       const aura = document.querySelector(".pointer-aura");
@@ -567,7 +596,7 @@ function App() {
     <div className={`app page-${page}`}>
       <AmbientScene />
       <div className="site-shell">
-        <Header page={page} />
+        <Header page={page} theme={theme} onThemeChange={setTheme} />
         <main className="main-content">
           {page === "about" ? <AboutPage /> : page === "vlog" ? <VlogPage /> : page === "contact" ? <ContactPage /> : <HomePage />}
         </main>
