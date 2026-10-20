@@ -3,9 +3,8 @@ window.siteThemeGroups = [
     name: "Classic",
     themes: [
       { id: "aurora", name: "Aurora" },
-      { id: "paper", name: "Paper" },
-      { id: "meadow", name: "Meadow" },
-      { id: "black-and-white", name: "Black & White" },
+      { id: "black", name: "Black" },
+      { id: "white", name: "White" },
     ],
   },
   {
@@ -37,6 +36,10 @@ window.siteThemeGroups = [
       { id: "golden-hour", name: "Golden Hour" },
       { id: "coffee", name: "Coffee" },
       { id: "storm", name: "Storm" },
+      { id: "pixel-quest", name: "Pixel Quest" },
+      { id: "storybook", name: "Storybook" },
+      { id: "anime-dream", name: "Anime Dream" },
+      { id: "mythic-realm", name: "Mythic Realm" },
     ],
   },
 ];

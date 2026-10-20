@@ -10,7 +10,7 @@
 
   let systemTheme = "aurora";
   try {
-    if (window.matchMedia("(prefers-color-scheme: light)").matches) systemTheme = "paper";
+    if (window.matchMedia("(prefers-color-scheme: light)").matches) systemTheme = "white";
   } catch {
     // Older browsers without matchMedia retain the Aurora default.
   }

@@ -176,6 +176,9 @@ function Header({ page, theme, onThemeChange }) {
   useEffect(() => {
     if (!themeOpen) return undefined;
 
+    const previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
     const closeOnOutsidePointer = (event) => {
       if (!themeControlRef.current?.contains(event.target)) setThemeOpen(false);
     };
@@ -204,6 +207,7 @@ function Header({ page, theme, onThemeChange }) {
     document.addEventListener("keydown", handleThemeKeys);
     requestAnimationFrame(() => themeControlRef.current?.querySelector(`[data-theme-id="${theme}"]`)?.focus());
     return () => {
+      document.body.style.overflow = previousBodyOverflow;
       document.removeEventListener("pointerdown", closeOnOutsidePointer);
       document.removeEventListener("keydown", handleThemeKeys);
     };
@@ -250,7 +254,13 @@ function Header({ page, theme, onThemeChange }) {
             </svg>
           </button>
           {themeOpen && (
-            <div className="theme-popover" role="dialog" aria-label="Choose a website theme">
+            <div
+              className="theme-popover"
+              role="dialog"
+              aria-label="Choose a website theme"
+              onWheel={(event) => event.stopPropagation()}
+              onTouchMove={(event) => event.stopPropagation()}
+            >
               <div className="theme-popover-heading">
                 <span className="theme-popover-title">Choose a theme</span>
                 <span className="theme-popover-hint" aria-live="polite">{themeNames[hoveredTheme] || themeNames[theme] || "Aurora"}</span>
