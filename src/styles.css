@@ -169,7 +169,8 @@ img {
   font-family: "Space Grotesk", sans-serif;
   font-size: 1.02rem;
   font-weight: 700;
-  letter-spacing: 0.11em;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
 }
 
 .brand-dot {
@@ -1248,6 +1249,11 @@ p {
 
   .site-header {
     min-height: 4.5rem;
+  }
+
+  .site-header .brand {
+    font-size: 0.78rem;
+    letter-spacing: 0.045em;
   }
 
   .menu-toggle {

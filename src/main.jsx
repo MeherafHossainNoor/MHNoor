@@ -168,8 +168,8 @@ function Header({ page }) {
 
   return (
     <header className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
-      <a className="brand" href="index.html" aria-label="Meheraf Hossain home">
-        MEHERAF<span className="brand-dot">.</span>
+      <a className="brand" href="index.html" aria-label="Meheraf Hossain Noor home">
+        MEHERAF HOSSAIN NOOR
       </a>
       <button
         className="menu-toggle"
@@ -384,7 +384,7 @@ function Footer({ page }) {
         <ButtonLink href="contact.html" primary>Come say hello</ButtonLink>
       </div>
       <div className="footer-bottom">
-        <a className="brand" href="index.html">MEHERAF<span className="brand-dot">.</span></a>
+        <a className="brand" href="index.html">MEHERAF HOSSAIN NOOR</a>
         <nav className="footer-socials" aria-label="Social links">
           {socialLinks.map((link) => (
             <a
