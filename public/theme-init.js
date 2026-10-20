@@ -8,11 +8,11 @@
     // Storage may be unavailable; use the system preference for this visit.
   }
 
-  let systemTheme = "aurora";
+  let systemTheme = "black";
   try {
     if (window.matchMedia("(prefers-color-scheme: light)").matches) systemTheme = "white";
   } catch {
-    // Older browsers without matchMedia retain the Aurora default.
+    // Older browsers without matchMedia retain the Black default.
   }
   document.documentElement.dataset.theme = validThemes.has(savedTheme) ? savedTheme : systemTheme;
 })();

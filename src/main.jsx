@@ -242,7 +242,7 @@ function Header({ page, theme, onThemeChange }) {
           <button
             className="theme-toggle"
             type="button"
-            aria-label={`Choose theme. Current theme: ${themeNames[theme] || "Aurora"}`}
+            aria-label={`Choose theme. Current theme: ${themeNames[theme] || "Black"}`}
             aria-expanded={themeOpen}
             aria-haspopup="dialog"
             onClick={() => setThemeOpen((open) => !open)}
@@ -263,7 +263,7 @@ function Header({ page, theme, onThemeChange }) {
             >
               <div className="theme-popover-heading">
                 <span className="theme-popover-title">Choose a theme</span>
-                <span className="theme-popover-hint" aria-live="polite">{themeNames[hoveredTheme] || themeNames[theme] || "Aurora"}</span>
+                <span className="theme-popover-hint" aria-live="polite">{themeNames[hoveredTheme] || themeNames[theme] || "Black"}</span>
               </div>
               {themeGroups.map((group) => (
                 <section className="theme-group" key={group.name} aria-label={`${group.name} themes`}>
@@ -645,7 +645,7 @@ function App() {
 
   useMotionAndReveal();
 
-  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || "aurora");
+  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || "black");
 
   const changeTheme = (nextTheme) => {
     document.documentElement.dataset.theme = nextTheme;
