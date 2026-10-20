@@ -258,10 +258,10 @@ function Header({ page, theme, onThemeChange }) {
               {themeGroups.map((group) => (
                 <section className="theme-group" key={group.name} aria-label={`${group.name} themes`}>
                   <h2>{group.name}</h2>
-                  <div className="theme-swatches" role="group" aria-label={`${group.name} themes`}>
+                  <div className="theme-options" role="group" aria-label={`${group.name} themes`}>
                     {group.themes.map(({ id: themeId }) => (
                       <button
-                        className={`theme-swatch ${theme === themeId ? "is-active" : ""}`}
+                        className={`theme-swatch theme-option ${theme === themeId ? "is-active" : ""}`}
                         type="button"
                         key={themeId}
                         data-theme-id={themeId}
@@ -279,7 +279,8 @@ function Header({ page, theme, onThemeChange }) {
                           themeButtonRef.current?.focus();
                         }}
                       >
-                        <span aria-hidden="true"></span>
+                        <span className="theme-option-dot" aria-hidden="true"></span>
+                        <span className="theme-option-name">{themeNames[themeId]}</span>
                       </button>
                     ))}
                   </div>

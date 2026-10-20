@@ -5,6 +5,7 @@ window.siteThemeGroups = [
       { id: "aurora", name: "Aurora" },
       { id: "paper", name: "Paper" },
       { id: "meadow", name: "Meadow" },
+      { id: "black-and-white", name: "Black & White" },
     ],
   },
   {
