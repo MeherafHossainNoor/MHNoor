@@ -1,7 +1,16 @@
 import * as THREE from "three";
 
-export function mountThreeScene(container, { variant = "ambient" } = {}) {
+export function mountThreeScene(container, { variant = "ambient", theme } = {}) {
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const themeStyles = getComputedStyle(document.documentElement);
+  const themeColor = (property, fallback) => themeStyles.getPropertyValue(property).trim() || fallback;
+  const sceneWire = variant === "showcase" && theme === "aurora"
+    ? "#9a83ff"
+    : themeColor("--scene-wire", "#8175ff");
+  const sceneKnot = themeColor("--scene-knot", "#48c8df");
+  const sceneOrbit = themeColor("--scene-orbit", "#e56bcb");
+  const particleA = new THREE.Color(themeColor("--scene-particle-a", "#8978ff"));
+  const particleB = new THREE.Color(themeColor("--scene-particle-b", "#5ee3e7"));
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
   camera.position.z = variant === "showcase" ? 6.2 : 8;
@@ -31,7 +40,7 @@ export function mountThreeScene(container, { variant = "ambient" } = {}) {
     ? new THREE.IcosahedronGeometry(1.45, 1)
     : new THREE.IcosahedronGeometry(1.45, 1);
   const wireMaterial = new THREE.MeshBasicMaterial({
-    color: variant === "showcase" ? 0x9a83ff : 0x8175ff,
+    color: sceneWire,
     wireframe: true,
     transparent: true,
     opacity: variant === "showcase" ? 0.68 : 0.22,
@@ -42,7 +51,7 @@ export function mountThreeScene(container, { variant = "ambient" } = {}) {
   const innerShape = new THREE.Mesh(
     new THREE.TorusKnotGeometry(0.82, 0.025, 100, 8, 2, 3),
     new THREE.MeshBasicMaterial({
-      color: 0x48c8df,
+      color: sceneKnot,
       transparent: true,
       opacity: variant === "showcase" ? 0.75 : 0.36,
     }),
@@ -51,7 +60,7 @@ export function mountThreeScene(container, { variant = "ambient" } = {}) {
 
   const halo = new THREE.Mesh(
     new THREE.TorusGeometry(2.05, 0.008, 6, 120),
-    new THREE.MeshBasicMaterial({ color: 0xe56bcb, transparent: true, opacity: 0.4 }),
+    new THREE.MeshBasicMaterial({ color: sceneOrbit, transparent: true, opacity: 0.4 }),
   );
   halo.rotation.x = 1.14;
   halo.rotation.y = 0.35;
@@ -60,13 +69,11 @@ export function mountThreeScene(container, { variant = "ambient" } = {}) {
   const count = variant === "showcase" ? 100 : 200;
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
-  const violet = new THREE.Color(0x8978ff);
-  const cyan = new THREE.Color(0x5ee3e7);
   for (let index = 0; index < count; index += 1) {
     positions[index * 3] = (Math.random() - 0.5) * (variant === "showcase" ? 8 : 15);
     positions[index * 3 + 1] = (Math.random() - 0.5) * (variant === "showcase" ? 6 : 10);
     positions[index * 3 + 2] = (Math.random() - 0.5) * 4;
-    const color = violet.clone().lerp(cyan, Math.random());
+    const color = particleA.clone().lerp(particleB, Math.random());
     colors[index * 3] = color.r;
     colors[index * 3 + 1] = color.g;
     colors[index * 3 + 2] = color.b;

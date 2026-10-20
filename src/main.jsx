@@ -101,6 +101,9 @@ const mottos = {
   contact: "Good conversations begin with a hello.",
 };
 
+const themeGroups = window.siteThemeGroups;
+const themeNames = Object.fromEntries(themeGroups.flatMap((group) => group.themes.map(({ id, name }) => [id, name])));
+
 function useMotionAndReveal() {
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -159,12 +162,52 @@ function useScrolledHeader() {
 function Header({ page, theme, onThemeChange }) {
   const scrolled = useScrolledHeader();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [themeOpen, setThemeOpen] = useState(false);
+  const [hoveredTheme, setHoveredTheme] = useState("");
+  const themeControlRef = useRef(null);
+  const themeButtonRef = useRef(null);
   const links = [
     ["Home", "index.html", "home"],
     ["Vlog", "vlog.html", "vlog"],
     ["About me", "about.html", "about"],
     ["Contact", "contact.html", "contact"],
   ];
+
+  useEffect(() => {
+    if (!themeOpen) return undefined;
+
+    const closeOnOutsidePointer = (event) => {
+      if (!themeControlRef.current?.contains(event.target)) setThemeOpen(false);
+    };
+    const handleThemeKeys = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setThemeOpen(false);
+        themeButtonRef.current?.focus();
+        return;
+      }
+
+      if (!["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp", "Home", "End"].includes(event.key)) return;
+      const buttons = [...themeControlRef.current.querySelectorAll(".theme-swatch")];
+      const current = buttons.indexOf(document.activeElement);
+      if (current < 0) return;
+      event.preventDefault();
+      let next = current;
+      if (event.key === "Home") next = 0;
+      else if (event.key === "End") next = buttons.length - 1;
+      else if (event.key === "ArrowRight" || event.key === "ArrowDown") next = (current + 1) % buttons.length;
+      else next = (current - 1 + buttons.length) % buttons.length;
+      buttons[next].focus();
+    };
+
+    document.addEventListener("pointerdown", closeOnOutsidePointer);
+    document.addEventListener("keydown", handleThemeKeys);
+    requestAnimationFrame(() => themeControlRef.current?.querySelector(`[data-theme-id="${theme}"]`)?.focus());
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePointer);
+      document.removeEventListener("keydown", handleThemeKeys);
+    };
+  }, [themeOpen, theme]);
 
   return (
     <header className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
@@ -191,22 +234,66 @@ function Header({ page, theme, onThemeChange }) {
             {label}
           </a>
         ))}
-        {page === "home" && (
-          <label className="theme-picker">
-            <span>Theme</span>
-            <select value={theme} onChange={(event) => onThemeChange(event.target.value)} aria-label="Homepage theme">
-              <option value="aurora">Aurora</option>
-              <option value="paper">Paper</option>
-              <option value="meadow">Meadow</option>
-            </select>
-          </label>
-        )}
+        <div className="theme-control" ref={themeControlRef}>
+          <button
+            className="theme-toggle"
+            type="button"
+            aria-label={`Choose theme. Current theme: ${themeNames[theme] || "Aurora"}`}
+            aria-expanded={themeOpen}
+            aria-haspopup="dialog"
+            onClick={() => setThemeOpen((open) => !open)}
+            ref={themeButtonRef}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 3a9 9 0 1 0 0 18h1.3a2.2 2.2 0 0 0 1.6-3.7 1.3 1.3 0 0 1 .9-2.2h1.1A4.1 4.1 0 0 0 21 11C21 6.6 17 3 12 3Z" />
+              <circle cx="7.7" cy="10" r="1" /><circle cx="10.8" cy="7" r="1" /><circle cx="15" cy="7.5" r="1" />
+            </svg>
+          </button>
+          {themeOpen && (
+            <div className="theme-popover" role="dialog" aria-label="Choose a website theme">
+              <div className="theme-popover-heading">
+                <span className="theme-popover-title">Choose a theme</span>
+                <span className="theme-popover-hint" aria-live="polite">{themeNames[hoveredTheme] || themeNames[theme] || "Aurora"}</span>
+              </div>
+              {themeGroups.map((group) => (
+                <section className="theme-group" key={group.name} aria-label={`${group.name} themes`}>
+                  <h2>{group.name}</h2>
+                  <div className="theme-swatches" role="group" aria-label={`${group.name} themes`}>
+                    {group.themes.map(({ id: themeId }) => (
+                      <button
+                        className={`theme-swatch ${theme === themeId ? "is-active" : ""}`}
+                        type="button"
+                        key={themeId}
+                        data-theme-id={themeId}
+                        data-theme-name={themeNames[themeId]}
+                        title={themeNames[themeId]}
+                        aria-label={`${themeNames[themeId]} theme${theme === themeId ? ", selected" : ""}`}
+                        aria-pressed={theme === themeId}
+                        onPointerEnter={() => setHoveredTheme(themeId)}
+                        onPointerLeave={() => setHoveredTheme("")}
+                        onFocus={() => setHoveredTheme(themeId)}
+                        onBlur={() => setHoveredTheme("")}
+                        onClick={() => {
+                          onThemeChange(themeId);
+                          setThemeOpen(false);
+                          themeButtonRef.current?.focus();
+                        }}
+                      >
+                        <span aria-hidden="true"></span>
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          )}
+        </div>
       </nav>
     </header>
   );
 }
 
-function ThreeLayer({ variant = "ambient" }) {
+function ThreeLayer({ variant = "ambient", theme }) {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -216,7 +303,7 @@ function ThreeLayer({ variant = "ambient" }) {
     const start = async () => {
       const { mountThreeScene } = await import("./three-engine.js");
       if (cancelled || !ref.current) return;
-      cleanup = mountThreeScene(ref.current, { variant });
+      cleanup = mountThreeScene(ref.current, { variant, theme });
     };
     start();
 
@@ -224,15 +311,15 @@ function ThreeLayer({ variant = "ambient" }) {
       cancelled = true;
       if (cleanup) cleanup();
     };
-  }, [variant]);
+  }, [variant, theme]);
 
   return <div className={`three-layer three-layer-${variant}`} ref={ref} aria-hidden="true" />;
 }
 
-function AmbientScene() {
+function AmbientScene({ theme }) {
   return (
     <Suspense fallback={<div className="ambient-fallback" aria-hidden="true"></div>}>
-      <ThreeLayer />
+      <ThreeLayer theme={theme} />
     </Suspense>
   );
 }
@@ -435,7 +522,7 @@ function HomePage() {
   );
 }
 
-function AboutPage() {
+function AboutPage({ theme }) {
   return (
     <>
       <section className="page-heading" data-reveal>
@@ -460,7 +547,7 @@ function AboutPage() {
         <SectionIntro label="A little perspective" title="A world of new angles" description="An interactive study in shape, light, and the joy of making something new." />
         <div className="model-viewer glass-panel">
           <Suspense fallback={<div className="model-loading">Preparing the scene…</div>}>
-            <ThreeLayer variant="showcase" />
+            <ThreeLayer variant="showcase" theme={theme} />
           </Suspense>
           <div className="model-caption"><span>FORM STUDY / 001</span><span>MOVE YOUR POINTER TO EXPLORE</span></div>
         </div>
@@ -547,24 +634,20 @@ function App() {
 
   useMotionAndReveal();
 
-  const [theme, setTheme] = useState(() => {
-    try {
-      return localStorage.getItem("homepage-theme") || "aurora";
-    } catch {
-      return "aurora";
-    }
-  });
+  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || "aurora");
+
+  const changeTheme = (nextTheme) => {
+    document.documentElement.dataset.theme = nextTheme;
+    setTheme(nextTheme);
+  };
 
   useEffect(() => {
-    if (page !== "home") return;
-    document.body.dataset.theme = theme;
     try {
       localStorage.setItem("homepage-theme", theme);
     } catch {
       // The selected theme still applies for this visit when storage is unavailable.
     }
-    return () => delete document.body.dataset.theme;
-  }, [page, theme]);
+  }, [theme]);
 
   useEffect(() => {
     if (window.matchMedia("(pointer: fine) and (prefers-reduced-motion: no-preference)").matches) {
@@ -594,11 +677,11 @@ function App() {
 
   return (
     <div className={`app page-${page}`}>
-      <AmbientScene />
+      <AmbientScene theme={theme} />
       <div className="site-shell">
-        <Header page={page} theme={theme} onThemeChange={setTheme} />
+        <Header page={page} theme={theme} onThemeChange={changeTheme} />
         <main className="main-content">
-          {page === "about" ? <AboutPage /> : page === "vlog" ? <VlogPage /> : page === "contact" ? <ContactPage /> : <HomePage />}
+          {page === "about" ? <AboutPage theme={theme} /> : page === "vlog" ? <VlogPage /> : page === "contact" ? <ContactPage /> : <HomePage />}
         </main>
         <Footer page={page} />
       </div>
